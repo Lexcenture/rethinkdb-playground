@@ -2,14 +2,21 @@
 var eventHandler = {
   publish : function(orders){
 
-    var orders;
+    var orders, refreshInterval;
 
     if (!!window.EventSource) {
 
       source = new EventSource("/stream");
-console.log(source);
       source.addEventListener("open", function(event) {
         console.log("Successfully Connected. State: %s", event.target.readyState);
+        setTimeout(function(){
+          console.log('Attempting to reload. Status: ', source.readyState === EventSource.CLOSED);
+          if(source.readyState === EventSource.CLOSED){
+            console.log('Actually reloading the page.');
+            location.reload();
+          }
+        }, 10000);
+
       }, false);
 
       source.addEventListener("message", function(event) {
@@ -34,7 +41,6 @@ console.log(source);
             itemToRemove.parentElement.removeChild(itemToRemove);
           }
         }
-
 
       }, false);
 

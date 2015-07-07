@@ -83,6 +83,10 @@ function stream(req, res, next) {
 
       if(!error){
         res.write("data: " + resultAsSJsontring(result) + "\n\n");
+        //https://github.com/Yaffle/EventSource/issues/24
+        //setInterval(function() {
+        //  res.write(":keepalive " + Date.now() + "\n\n");
+        //}, 30000);
       }else{
         console.log('error found.');
       }
