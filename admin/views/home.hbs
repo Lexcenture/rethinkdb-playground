@@ -1,0 +1,10 @@
+<section class="orders">
+  <h2>Orders</h2>
+  <ul id="orders">
+    {{#each orders}}
+      <li>Name: {{this.name}} Quantity: {{this.quantity}}.</li>
+    {{else}}
+      <li>No orders placed yet.</li>
+    {{/each}}
+  </ul>
+</section>

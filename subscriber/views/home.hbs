@@ -1,0 +1,21 @@
+<section class="orders">
+  <h2>My orders</h2>
+  <ul>
+    {{#each orders}}
+      <li>Name: {{this.name}} Quantity: {{this.quantity}}.<div><a href="/order/{{this.id}}">Delete</a></div></li>
+    {{else}}
+      <li>No item found.</li>
+    {{/each}}
+  </ul>
+
+  <div>
+
+    <form method="post" action="/" >
+      <label>
+        <input type="text" placeholder="Name" name="name">
+        <input type="text" placeholder="Quantity" name="quantity">
+        <input type="submit" value="Place" name="PlaceOrder">
+      </label>
+    </form>
+  </div>
+</section>
