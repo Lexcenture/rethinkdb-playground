@@ -56,7 +56,7 @@ function startExpress(connection) {
 
 
 function orders(req, res, next) {
-  r.table('orders').orderBy({index: 'createdAt'}).run(req.app._rdbConn, function (err, cursor) {
+  r.table('orders').orderBy({index: r.asc('createdAt')}).run(req.app._rdbConn, function (err, cursor) {
     if (err) {
       return next(err);
     }
@@ -71,29 +71,42 @@ function orders(req, res, next) {
   });
 }
 
-
-
 function stream(req, res, next) {
-  console.log('stream');
   res.header('Content-Type', 'text/event-stream');
   res.header('Cache-Control', 'no-cache');
   res.header('Connection', 'keep-alive');
   res.status(200);
 
-  r.table('orders').orderBy({index: 'createdAt'}).changes().run(req.app._rdbConn, function(err, cursor) {
+  r.table('orders').orderBy({index: r.asc('createdAt')}).changes().run(req.app._rdbConn, function(err, cursor) {
 
     cursor.each(function(error, result){
 
       if(!error){
-        var json = JSON.stringify(result.new_val).replace(/(\r\n|\n|\r)/gm,"");
-        console.log(json);
-        res.write("data: " + json + "\n\n");
+        res.write("data: " + resultAsSJsontring(result) + "\n\n");
       }else{
         console.log('error found.');
       }
 
     });
   });
+}
+
+function resultAsSJsontring(result){
+  var order = {};
+  if(result.new_val && !result.old_val){
+    order = result.new_val;
+    order.action = 'create';
+  }
+  else if(result.old_val && !result.new_val){
+    order = result.old_val;
+    order.status = 'delete'
+  }
+  else{
+    order = result.new_val;
+    order.status = 'update';
+  }
+
+  return JSON.stringify(order).replace(/(\r\n|\n|\r)/gm,"");
 }
 
 async.waterfall([

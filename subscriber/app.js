@@ -16,12 +16,6 @@ app.engine('hbs', hbs({
 }));
 app.set('view engine', 'hbs');
 
-//app.use(bodyParser.text({ type: 'text/html' }));
-
-// create application/json parser
-var jsonParser = bodyParser.json()
-
-// create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({extended: false})
 
 
@@ -32,22 +26,13 @@ app.route('/')
 app.route('/order/:id')
     .get(deleteOrder);
 
-//If we reach this middleware the route could not be handled and must be unknown.
 app.use(handle404);
-
-//Generic error handling middleware.
 app.use(handleError);
 
-/*
- * Page-not-found middleware.
- */
 function handle404(req, res, next) {
   res.status(404).end('not found');
 }
-/*
- * Generic error handling middleware.
- * Send back a 500 page and log the error to the console.
- */
+
 function handleError(err, req, res, next) {
   console.error(err.stack);
   res.status(500).json({err: err.message});
@@ -66,7 +51,6 @@ function orders(req, res, next) {
       return next(err);
     }
 
-    //Retrieve all the orders in an array.
     cursor.toArray(function (err, result) {
       if (err) {
         return next(err);
@@ -93,7 +77,6 @@ function placeOrder(req, res, next) {
 function deleteOrder(req, res, next) {
 
   var orderItemId = req.params.id;
-  console.log(orderItemId);
 
   r.table('orders').get(orderItemId).delete().run(req.app._rdbConn, function(err, result) {
     if(err) {
@@ -104,11 +87,6 @@ function deleteOrder(req, res, next) {
   });
 }
 
-
-/*
- * Connect to rethinkdb, create the needed tables/indexes and then start express.
- * Create tables/indexes then start express
- */
 async.waterfall([
   function connect(callback) {
     r.connect(config.rethinkdb, callback);

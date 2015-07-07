@@ -22,10 +22,19 @@ console.log(source);
           return;
         }
 
-        var newOrder = document.createElement("LI");
-        newOrder.appendChild(document.createTextNode(['Name: ', order.name,  ' Quantity: ', order.quantity].join('')));
+        if(order.action === 'create'){
+          var newOrder = document.createElement("LI");
+          newOrder.id = order.id;
+          newOrder.appendChild(document.createTextNode(['Name: ', order.name,  ' Quantity: ', order.quantity].join('')));
+          //orders.appendChild(newOrder);
+          orders.insertBefore(newOrder, orders.firstChild);
+        }else{
+          var itemToRemove = document.getElementById(order.id);
+          if(itemToRemove){
+            itemToRemove.parentElement.removeChild(itemToRemove);
+          }
+        }
 
-        orders.appendChild(newOrder);
 
       }, false);
 
